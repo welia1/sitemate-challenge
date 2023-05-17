@@ -33,12 +33,11 @@ class IssueRepository {
     return issue;
   }
 
-  async read(id) {
+  async read(issueId) {
     const data = await this.readData();
-    if (!data.issues || !Array.isArray(data.issues)) {
-      throw new Error('Issue data not found');
-    }
-    const issue = data.issues.find(issue => issue.id === issueId);
+    const issue = data.issues.filter(issue => {
+      return issue.id.toString() === issueId
+    });
     if (!issue) {
       throw new Error('Issue not found');
     }
@@ -50,9 +49,11 @@ class IssueRepository {
     return data.issues;
   }
 
-  async update(id, update) {
+  async update(issueId, update) {
     const data = await this.readData();
-    const issue = data.issues.find(issue => issue.id === id);
+    const issue = data.issues.filter(issue => {
+      return issue.id.toString() === issueId
+    });
     if (!issue) {
       throw new Error('Issue not found');
     }
@@ -63,7 +64,9 @@ class IssueRepository {
 
   async delete(id) {
     const data = await this.readData();
-    const index = data.issues.findIndex(issue => issue.id === id);
+    const index = data.issues.findIndex(issue => {
+      return issue.id === id;
+    });
     if (index === -1) {
       throw new Error('Issue not found');
     }

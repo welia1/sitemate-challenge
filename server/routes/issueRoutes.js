@@ -14,6 +14,7 @@ module.exports = function(issueService) {
 
   router.get('/:id', async (req, res, next) => {
     try {
+      console.log(req.params.id);
       const issue = await issueService.read(req.params.id);
       res.status(200).json(issue);
     } catch (err) {

@@ -1,12 +1,14 @@
-[
-  {
-    "id": 1,
-    "title": "issue test 1",
-    "description": "this is a sample test issue 1"
-  },
-  {
-    "id": 2,
-    "title": "issue test 2",
-    "description": "another test issues, but with some more details."
-  }
-]
+{
+  "issues": [
+    {
+      "id": 1,
+      "title": "issue test 1",
+      "description": "this is a sample test issue 1"
+    },
+    {
+      "id": 2,
+      "title": "issue test 2",
+      "description": "another test issues, but with some more details."
+    }
+  ]
+}
