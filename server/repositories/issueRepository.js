@@ -58,9 +58,7 @@ class IssueRepository {
       throw new Error('Issue not found');
     }
     Object.assign(issue, update);
-    console.log(issue)
-    console.log(data)
-    // await this.writeData(data);
+    await this.writeData(data);
     return issue;
   }
 
