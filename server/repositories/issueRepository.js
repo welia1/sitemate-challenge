@@ -53,20 +53,23 @@ class IssueRepository {
     const data = await this.readData();
     const issue = data.issues.filter(issue => {
       return issue.id.toString() === issueId
-    });
+    })[0];
     if (!issue) {
       throw new Error('Issue not found');
     }
     Object.assign(issue, update);
-    await this.writeData(data);
+    console.log(issue)
+    console.log(data)
+    // await this.writeData(data);
     return issue;
   }
 
   async delete(id) {
     const data = await this.readData();
-    const index = data.issues.findIndex(issue => {
-      return issue.id === id;
-    });
+    const index = data.issues.filter(issue => {
+      return issue.id.toString() === id;
+    }).map(v => data.issues.indexOf(v));
+
     if (index === -1) {
       throw new Error('Issue not found');
     }
