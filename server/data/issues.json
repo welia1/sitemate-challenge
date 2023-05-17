@@ -9,6 +9,12 @@
       "id": 2,
       "title": "issue test 2",
       "description": "another test issues, but with some more details."
+    },
+    {
+      "title": "test create",
+      "description": "aaa",
+      "id": "NaN"
     }
-  ]
+  ],
+  "nextId": null
 }
