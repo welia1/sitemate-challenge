@@ -1,82 +1,64 @@
-const axios = require('axios');
-const inquirer = require('inquirer');
+// client.js
 
-const client = axios.create({
-  baseURL: 'http://localhost:3000'
-});
+import inquirer from 'inquirer';
+import axios from 'axios';
+const baseUrl = 'http://localhost:3000/issues';
 
 async function main() {
-  const choices = [
-    'Create an issue',
-    'View an issue',
-    'Update an issue',
-    'Delete an issue',
-    'View all issues',
-    'Quit'
-  ];
+  const { action } = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'action',
+      message: 'What do you want to do?',
+      choices: ['Create', 'Read', 'Update', 'Delete', 'List'],
+    },
+  ]);
 
-  while (true) {
-    const { operation } = await inquirer.prompt([
-      { type: 'list', name: 'operation', message: 'What do you want to do?', choices }
-    ]);
+  let id;
+  switch (action) {
+    case 'Create':
+      const { title, description } = await inquirer.prompt([
+        { type: 'input', name: 'title', message: 'Enter the title:' },
+        { type: 'input', name: 'description', message: 'Enter the description:' },
+      ]);
+      await axios.post(baseUrl, { title, description });
+      console.log('Issue created successfully');
+      break;
 
-    try {
-      switch (operation) {
-        case 'Create an issue':
-          await createIssue();
-          break;
-        case 'View an issue':
-          await viewIssue();
-          break;
-        case 'Update an issue':
-          await updateIssue();
-          break;
-        case 'Delete an issue':
-          await deleteIssue();
-          break;
-        case 'View all issues':
-          await viewAllIssues();
-          break;
-        case 'Quit':
-          process.exit(0);
-      }
-    } catch (err) {
-      console.error(`Operation failed: ${err.message}`);
-    }
+    case 'Read':
+      id = await getIssueId();
+      const issue = await axios.get(`${baseUrl}/${id}`);
+      console.log(issue.data);
+      break;
+
+    case 'Update':
+      id = await getIssueId();
+      const update = await inquirer.prompt([
+        { type: 'input', name: 'title', message: 'Enter the new title:' },
+        { type: 'input', name: 'description', message: 'Enter the new description:' },
+      ]);
+      await axios.put(`${baseUrl}/${id}`, update);
+      console.log('Issue updated successfully');
+      break;
+
+    case 'Delete':
+      id = await getIssueId();
+      await axios.delete(`${baseUrl}/${id}`);
+      console.log('Issue deleted successfully');
+      break;
+
+    case 'List':
+      const issues = await axios.get(baseUrl);
+      console.log(issues.data);
+      break;
   }
 }
 
-async function createIssue() {
-  const { title, description } = await inquirer.prompt([
-    { type: 'input', name: 'title', message: 'Issue title?' },
-    { type: 'input', name: 'description', message: 'Issue description?' }
-  ]);
-
-  const response = await client.post('/issues', { title, description });
-  console.log(`Created issue: ${response.data.id}`);
-}
-
-async function viewIssue() {
+async function getIssueId() {
   const { id } = await inquirer.prompt([
-    { type: 'input', name: 'id', message: 'Issue ID?' }
+    { type: 'input', name: 'id', message: 'Enter the issue id:' },
   ]);
-
-  const response = await client.get(`/issues/${id}`);
-  console.log(response.data);
+  return id;
 }
 
-async function viewAllIssues() {
-  const response = await client.get('/issues');
-  console.log(response.data);
-}
-
-async function updateIssue() {
-}
-
-async function deleteIssue() {
-}
-
-main().catch(err => {
-  console.error(err);
-  process.exit(1);
-});
+main().catch(err => console.error(err));

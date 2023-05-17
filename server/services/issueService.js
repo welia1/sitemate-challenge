@@ -1,27 +1,38 @@
-const IssueRepository = require('./repositories/issueRepository');
-
 class IssueService {
-  constructor() {
-    this.repository = new IssueRepository();
+  constructor(repository) {
+    this.repository = repository;
   }
 
-  create(issue) {
-    // Add your business logic here
-    return this.repository.create(issue);
+  async create(issueData) {
+    if (!issueData.title || !issueData.description) {
+      throw new Error('Invalid issue data');
+    }
+    return this.repository.create(issueData);
   }
 
-  get(id) {
-    return this.repository.get(id);
+  async read(issueId) {
+    if (!issueId) {
+      throw new Error('Invalid issue ID');
+    }
+    return this.repository.read(issueId);
   }
 
-  getAll() {
-    return this.repository.getAll();
+  async update(issueId, updatedData) {
+    if (!issueId || (!updatedData.title && !updatedData.description)) {
+      throw new Error('Invalid issue data');
+    }
+    return this.repository.update(issueId, updatedData);
   }
 
-  update(id, issue) {
+  async delete(issueId) {
+    if (!issueId) {
+      throw new Error('Invalid issue ID');
+    }
+    return this.repository.delete(issueId);
   }
 
-  delete(id) {
+  async list() {
+    return this.repository.list();
   }
 }
 

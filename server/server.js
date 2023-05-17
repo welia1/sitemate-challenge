@@ -1,36 +1,31 @@
+// server.js
+
 const express = require('express');
 const bodyParser = require('body-parser');
-const IssueService = require('services/issueService');
-const logger = require('./logger');
+// const morgan = require('morgan');
+const winston = require('./utils/logger');
+const issueRoutes = require('./routes/issueRoutes');
+const IssueService = require('./services/issueService');
+const IssueRepository = require('./repositories/issueRepository');
+const errorMiddleware = require('./middleware/errorHandlerMiddleware');
+const validationMiddleware = require('./middleware/validationMiddleware');
 
 const app = express();
-const issueService = new IssueService();
+const issueRepository = new IssueRepository();
+const issueService = new IssueService(issueRepository);
 
+// Middleware
 app.use(bodyParser.json());
+// app.use(morgan('combined', { stream: winston.stream }));
 
-app.post('/issues', (req, res) => {
-    const issue = issueService.create(req.body);
-    res.status(201).json(issue);
-});
+// Validation middleware
+app.use('/issues', validationMiddleware);
 
-app.get('/issues/:id', (req, res) => {
-    const issue = issueService.get(req.params.id);
-    if (!issue) {
-        logger.error(`Issue not found: ${req.params.id}`);
-        return res.status(404).send('Issue not found');
-    }
-    res.json(issue);
-});
+// Routes
+app.use('/issues', issueRoutes(issueService));
 
-app.get('/issues', (req, res) => {
-    const issues = issueService.getAll();
-    res.json(issues);
-});
+// Error handling middleware
+app.use(errorMiddleware);
 
-app.put('/issues/:id', (req, res) => {
-});
-
-app.delete('/issues/:id', (req, res) => {
-});
-
-module.exports = app;
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log(`Server started on port ${port}`));
